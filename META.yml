@@ -1,0 +1,27 @@
+---
+abstract: 'Implementing the Gittip API more or less'
+author:
+  - 'Gabor Szabo <szabgab@cpan.org>'
+build_requires:
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.133380'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: WWW-Gittip
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  JSON: 0
+  LWP::Simple: 0
+  Test::Deep: 0
+  Test::More: 1.00
+resources:
+  repository: http://github.com/szabgab/WWW-Gittip
+version: 0.01
