@@ -2,10 +2,11 @@ package WWW::Gittip;
 use strict;
 use warnings;
 
-use LWP::Simple qw(get);
+use LWP::UserAgent;
 use JSON qw(from_json);
 
-our $VERSION = '0.02';
+
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -14,15 +15,52 @@ WWW::Gittip - Implementing the Gittip API more or less
 =head1 SYNOPSIS
 
   use WWW::Gittip;
-  my $charts = WWW::Gittip->charts;
+  my $gt = WWW::Gittip->new;
+  my $charts = $gt->charts;
 
-  my $user_charts = WWW::Gittip->user_charts('szabgab');
+  my $user_charts = $gt->user_charts('szabgab');
 
 =head1 DESCIPTION
 
 The API docs of Gittp: L<https://github.com/gittip/www.gittip.com#api>
 
 When necessary, you can get an API key from your account on Gittip at L<https://www.gittip.com/about/me/account>
+
+=cut
+
+
+=head2 new
+
+  my $gt = WWW::Gittip->new;
+  my $gt = WWW::Gittip->new( api_key => '123-456' );
+
+
+=cut
+
+sub new {
+	my ($class, %params) = @_;
+	bless \%params, $class;
+}
+
+=head2 api_key
+
+Set/Get the API_KEY
+
+  $gt->api_key('123-456');
+
+  my $api_key = $gt->api_key;
+
+=cut
+
+
+sub api_key {
+	my ($self, $value) = @_;
+	if (defined $value) {
+		$self->{api_key} = $value;
+	}
+	return $self->{api_key};
+}
+
 
 =head2 charts
 
@@ -43,8 +81,10 @@ Each element in the array has the following fields:
 
 
 sub charts {
+	my ($self) = @_;
+
 	my $url = "https://www.gittip.com/about/charts.json";
-	return _get($url);
+	return $self->_get($url);
 }
 
 =head2 user_charts
@@ -71,7 +111,7 @@ sub user_charts {
 	#croak "Invalid username '$username'" if $username eq 'about';
 
 	my $url = "https://www.gittip.com/$username/charts.json";
-	return _get($url);
+	return $self->_get($url);
 }
 
 
@@ -101,8 +141,10 @@ Each element in the array has the following fields:
 =cut
 
 sub paydays {
+	my ($self) = @_;
+
 	my $url = 'https://www.gittip.com/about/paydays.json';
-	return _get($url);
+	return $self->_get($url);
 }
 
 =head2 stats
@@ -115,8 +157,10 @@ with lots of keys...
 
 
 sub stats {
+	my ($self) = @_;
+
 	my $url = 'https://www.gittip.com/about/stats.json';
-	return _get($url);
+	return $self->_get($url);
 }
 
 =head2 communities
@@ -132,8 +176,10 @@ Currently only returns an empty list.
 =cut
 
 sub communities {
+	my ($self) = @_;
+
 	my $url = 'https://www.gittip.com/for/communities.json';
-	return _get($url);
+	return $self->_get($url);
 }
 
 # https://www.gittip.com/about/tip-distribution.json
@@ -141,9 +187,25 @@ sub communities {
 
 
 sub _get {
-	my ($url) = @_;
+	my ($self, $url) = @_;
 
-	my $charts = get $url;
+	my $ua = LWP::UserAgent->new;
+	$ua->timeout(10);
+
+	my $api_key = $self->api_key;
+	if ($api_key) {
+		require MIME::Base64;
+		$ua->default_header('Authorization',  "Basic " . MIME::Base64::encode("$api_key:", '') );
+	}
+
+	my $response = $ua->get($url);
+	if (not $response->is_success) {
+		warn "Failed request\n";
+		warn $response->status_line;
+		return [];
+	}
+
+	my $charts = $response->decoded_content;
 	if (not defined $charts or $charts eq '') {
 		warn "Empty return\n";
 		return [];

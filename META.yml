@@ -20,9 +20,10 @@ no_index:
 requires:
   JSON: 0
   LWP::Protocol::https: 6.04
-  LWP::Simple: 0
+  LWP::UserAgent: 6.04
+  MIME::Base64: 0
   Test::Deep: 0
   Test::More: 1.00
 resources:
   repository: http://github.com/szabgab/WWW-Gittip
-version: 0.02
+version: 0.03
