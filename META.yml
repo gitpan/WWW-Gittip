@@ -18,6 +18,7 @@ no_index:
     - t
     - inc
 requires:
+  HTML::TreeBuilder: 5.03
   JSON: 0
   LWP::Protocol::https: 6.04
   LWP::UserAgent: 6.04
@@ -26,4 +27,4 @@ requires:
   Test::More: 1.00
 resources:
   repository: http://github.com/szabgab/WWW-Gittip
-version: 0.04
+version: 0.05
