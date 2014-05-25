@@ -27,4 +27,4 @@ requires:
   Test::More: 1.00
 resources:
   repository: http://github.com/szabgab/WWW-Gittip
-version: 0.05
+version: 0.06

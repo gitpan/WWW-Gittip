@@ -6,7 +6,7 @@ use LWP::UserAgent;
 use JSON qw(from_json);
 use HTML::TreeBuilder 5 -weak;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 
@@ -20,7 +20,12 @@ WWW::Gittip - Implementing the Gittip API more or less
 
   my $user_charts = $gt->user_charts('szabgab');
 
-=head1 DESCIPTION
+=head1 DESCRIPTION
+
+This module provides a Perl interface to the L<Gittip|http://www.gittip.com> API.
+Gittip describes itself as "a way to give small weekly cash gifts to people you
+love and are inspired by". It is one way you can give small recurring amounts to
+people who've written open source software that you regularly use.
 
 The API docs of Gittp: L<https://github.com/gittip/www.gittip.com#api>
 
