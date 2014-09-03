@@ -1,10 +1,10 @@
 {
-   "abstract" : "Implementing the Gittip API more or less",
+   "abstract" : "Implementing the Gittip (now Gratipay) API. More or less.",
    "author" : [
       "Gabor Szabo <szabgab@cpan.org>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.133380",
+   "generated_by" : "ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060",
    "license" : [
       "perl_5"
    ],
@@ -22,7 +22,10 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : "0",
+            "Test::Deep" : "0.113",
+            "Test::More" : "1.00",
+            "Test::Warn" : "0.30"
          }
       },
       "configure" : {
@@ -36,9 +39,7 @@
             "JSON" : "0",
             "LWP::Protocol::https" : "6.04",
             "LWP::UserAgent" : "6.04",
-            "MIME::Base64" : "0",
-            "Test::Deep" : "0",
-            "Test::More" : "1.00"
+            "MIME::Base64" : "0"
          }
       }
    },
@@ -48,5 +49,5 @@
          "url" : "http://github.com/szabgab/WWW-Gittip"
       }
    },
-   "version" : "0.06"
+   "version" : "0.07"
 }

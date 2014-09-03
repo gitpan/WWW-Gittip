@@ -9,10 +9,12 @@ WriteMakefile(
                            'LWP::Protocol::https' => '6.04',  # for https support
                            'JSON'                 => 0,
                            'HTML::TreeBuilder'    => '5.03',
-
-                           'Test::More'           => '1.00',
-                           'Test::Deep'           => 0,
                         },
+    "TEST_REQUIRES" => {
+                           'Test::More'           => '1.00',
+                           'Test::Deep'           => '0.113',
+                           'Test::Warn'           => '0.30',
+    },
     ABSTRACT_FROM => 'lib/WWW/Gittip.pm',
     AUTHOR        => 'Gabor Szabo <szabgab@cpan.org>',
     ($ExtUtils::MakeMaker::VERSION >= 6.3002

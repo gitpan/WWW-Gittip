@@ -4,6 +4,7 @@ use warnings;
 
 use Test::More;
 use Test::Deep;
+#use Test::Warn;
 
 plan tests => 9;
 
@@ -24,7 +25,7 @@ my $TIMESTAMP = re('^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+\+\d\d:\d\d$');
 # 123
 my $INT = re('^\d+$');
 
-my $USERNAME = re('^[\w -]+$');
+my $USERNAME = re('^[\w .-]+$');
 
 my $gt = WWW::Gittip->new;
 isa_ok $gt, 'WWW::Gittip';
@@ -47,7 +48,7 @@ subtest charts => sub {
 };
 
 subtest user_chars => sub {
-	plan tests => 2;
+	plan tests => 3;
 	my $charts_user = $gt->user_charts('szabgab');
 	#diag scalar @$charts_user;
 	#diag explain $charts_user;
@@ -72,7 +73,22 @@ subtest user_chars => sub {
 	
 	cmp_deeply($charts_user, array_each($user_chart_entry), 'user_charts');
 
-	my $invalid = $gt->user_charts('a/b');
+	my $invalid;
+	{
+		my @warnings;
+		local $SIG{__WARN__} = sub { push @warnings, $_[0] };
+		$invalid = $gt->user_charts('a/b');
+		$_ =~ s/[\r\n]*$// for @warnings;
+		#diag explain \@warnings;
+		is_deeply \@warnings, [
+			q{Failed request https://www.gratipay.com/a/b/charts.json},
+			q{404 Not Found},
+		], 'expected warnings';
+	}
+	#warnings_are { $invalid = $gt->user_charts('a/b') } [
+	#	qq{Failed request https://www.gratipay.com/a/b/charts.json},
+	#	qq{404 Not Found},
+	#], 'expected warnings';
 	cmp_deeply $invalid, [], 'invalid requets';
 };
 
@@ -91,7 +107,7 @@ subtest user_public => sub {
 	#diag explain $pub;
 	is $pub->{username}, 'szabgab', 'username';
 	is $pub->{id},       25031,     'id';
-	is $pub->{on},       'gittip',  'on';
+	is $pub->{on},       'gratipay',  'on';
 	foreach my $f (qw(giving receiving)) {
 		ok exists $pub->{$f};
 		if (defined $pub->{$f}) {
@@ -171,10 +187,11 @@ subtest api_key => sub {
 
 	#diag explain $communities;
 	my $expected_community = {
-		'is_member' => isa('JSON::PP::Boolean'),
+		#'is_member' => isa('JSON::PP::Boolean'),
 		'name'      => re('^[\w., -]+$'),
 		'nmembers'  => re('^\d+$'),
 		'slug'      => re('^[\w-]+$'),
+		'ctime'     => $TIMESTAMP,
 	};
 	#cmp_deeply($communities->{communities}[0], $expected_community);
 	cmp_deeply($communities->{communities}, array_each($expected_community));

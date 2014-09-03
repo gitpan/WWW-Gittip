@@ -6,11 +6,12 @@ use LWP::UserAgent;
 use JSON qw(from_json);
 use HTML::TreeBuilder 5 -weak;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
+my $BASE_URL = 'https://www.gratipay.com';
 
 =head1 NAME
 
-WWW::Gittip - Implementing the Gittip API more or less
+WWW::Gittip - Implementing the Gittip (now Gratipay) API. More or less.
 
 =head1 SYNOPSIS
 
@@ -22,14 +23,14 @@ WWW::Gittip - Implementing the Gittip API more or less
 
 =head1 DESCRIPTION
 
-This module provides a Perl interface to the L<Gittip|http://www.gittip.com> API.
+This module provides a Perl interface to the L<Gratipay|http://www.gratipay.com> API.
 Gittip describes itself as "a way to give small weekly cash gifts to people you
 love and are inspired by". It is one way you can give small recurring amounts to
 people who've written open source software that you regularly use.
 
 The API docs of Gittp: L<https://github.com/gittip/www.gittip.com#api>
 
-When necessary, you can get an API key from your account on Gittip at L<https://www.gittip.com/about/me/account>
+When necessary, you can get an API key from your account on Gittip at L<https://www.gratipay.com/about/me/account>
 
 =cut
 
@@ -88,7 +89,7 @@ Each element in the array has the following fields:
 sub charts {
 	my ($self) = @_;
 
-	my $url = "https://www.gittip.com/about/charts.json";
+	my $url = "$BASE_URL/about/charts.json";
 	return $self->_get($url);
 }
 
@@ -115,7 +116,7 @@ sub user_charts {
 
 	#croak "Invalid username '$username'" if $username eq 'about';
 
-	my $url = "https://www.gittip.com/$username/charts.json";
+	my $url = "$BASE_URL/$username/charts.json";
 	return $self->_get($url);
 }
 
@@ -148,7 +149,7 @@ Each element in the array has the following fields:
 sub paydays {
 	my ($self) = @_;
 
-	my $url = 'https://www.gittip.com/about/paydays.json';
+	my $url = "$BASE_URL/about/paydays.json";
 	return $self->_get($url);
 }
 
@@ -164,7 +165,7 @@ with lots of keys...
 sub stats {
 	my ($self) = @_;
 
-	my $url = 'https://www.gittip.com/about/stats.json';
+	my $url = "$BASE_URL/about/stats.json";
 	return $self->_get($url);
 }
 
@@ -172,7 +173,9 @@ sub stats {
 
 See L<https://github.com/gittip/www.gittip.com/issues/2014>
 
-L<https://www.gittip.com/for/perl/?limit=20&offset=20>
+L<https://www.gratipay.com/for/perl/?limit=20>
+
+L<https://www.gratipay.com/for/perl/?limit=20&offset=20>
 
 L<https://github.com/gittip/www.gittip.com/issues/2408>
 
@@ -183,7 +186,7 @@ Currently only returns an empty list.
 sub communities {
 	my ($self) = @_;
 
-	my $url = 'https://www.gittip.com/for/communities.json';
+	my $url = "$BASE_URL/for/communities.json";
 	return $self->_get($url);
 }
 
@@ -225,11 +228,11 @@ Some of the fields look like these:
 sub user_public {
 	my ($self, $username) = @_;
 
-	my $url = "https://www.gittip.com/$username/public.json";
+	my $url = "$BASE_URL/$username/public.json";
 	return $self->_get($url);
 }
 
-# https://www.gittip.com/about/tip-distribution.json
+# https://www.gratipay.com/about/tip-distribution.json
 # returns an array of numbers \d+\.\d\d  (over 8000 entries), probably the full list of tips.
 
 =head2 user_tips
@@ -252,7 +255,7 @@ Each hash is looks like this
 sub user_tips {
 	my ($self, $username) = @_;
 
-	my $url = "https://www.gittip.com/$username/tips.json";
+	my $url = "$BASE_URL/$username/tips.json";
 	return $self->_get($url);
 }
 
@@ -262,7 +265,7 @@ sub user_tips {
 
 Given the name of a community, returns a hash with 3 keys:
 new, give, and receive corresponding to the 3 columns of the
-https://www.gittip.com/for/perl page.
+https://www.gratipay.com/for/perl page.
 
 Each key has an array reference as the value. Each arr has several elements:
 
@@ -313,7 +316,7 @@ sub community_members {
 	my $offset = 0;
 	my $total;
 	while (1) {
-		my $url = "https://www.gittip.com/for/$name?limit=$limit&offset=$offset";
+		my $url = "$BASE_URL/for/$name?limit=$limit&offset=$offset";
 
 		print "Requesting: $url\n";
 
@@ -413,8 +416,8 @@ sub _get {
 
 	my $response = $self->_get_html($url);
 	if (not $response->is_success) {
-		warn "Failed request\n";
-		warn $response->status_line;
+		warn "Failed request $url\n";
+		warn $response->status_line . "\n";
 		return [];
 	}
 
